@@ -1,0 +1,1306 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rekenheld van de Noordzee</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&family=Fredoka+One&display=swap');
+
+  :root {
+    --sea-dark: #0a3d62;
+    --sea-mid: #1e6f8f;
+    --sea-light: #3dc1d3;
+    --sand: #f6e58d;
+    --sand-dark: #d4a843;
+    --foam: #dff9fb;
+    --coral: #e55039;
+    --coral-light: #ff7979;
+    --shell-pink: #f8a5c2;
+    --seaweed: #6ab04c;
+    --star-gold: #f9ca24;
+    --white: #ffffff;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Quicksand', sans-serif;
+    background: linear-gradient(180deg, #87CEEB 0%, #3dc1d3 30%, #1e6f8f 60%, #0a3d62 100%);
+    min-height: 100vh;
+    overflow-x: hidden;
+    color: var(--white);
+  }
+
+  /* ===== WAVES ===== */
+  .waves {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 120px;
+    z-index: 0;
+    pointer-events: none;
+  }
+  .wave {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 200%;
+    height: 100%;
+    background-repeat: repeat-x;
+    animation: wave-move 8s linear infinite;
+  }
+  .wave1 {
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 120'%3E%3Cpath d='M0,60 C200,120 400,0 600,60 C800,120 1000,0 1200,60 L1200,120 L0,120Z' fill='%231e6f8f' opacity='0.6'/%3E%3C/svg%3E");
+    background-size: 600px 120px;
+    animation-duration: 7s;
+  }
+  .wave2 {
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 120'%3E%3Cpath d='M0,60 C200,120 400,0 600,60 C800,120 1000,0 1200,60 L1200,120 L0,120Z' fill='%230a3d62' opacity='0.4'/%3E%3C/svg%3E");
+    background-size: 600px 120px;
+    animation-duration: 11s;
+    animation-direction: reverse;
+    bottom: -10px;
+  }
+  @keyframes wave-move {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+
+  /* ===== BUBBLES ===== */
+  .bubbles {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+  }
+  .bubble {
+    position: absolute;
+    bottom: -40px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.15);
+    animation: bubble-rise linear infinite;
+  }
+  @keyframes bubble-rise {
+    0% { transform: translateY(0) scale(1); opacity: 0.6; }
+    100% { transform: translateY(-110vh) scale(0.5); opacity: 0; }
+  }
+
+  /* ===== CONTAINER ===== */
+  .container {
+    position: relative;
+    z-index: 1;
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 20px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* ===== CARDS ===== */
+  .card {
+    background: rgba(255,255,255,0.12);
+    backdrop-filter: blur(12px);
+    border-radius: 24px;
+    padding: 40px;
+    width: 100%;
+    border: 1px solid rgba(255,255,255,0.2);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+    text-align: center;
+    animation: card-in 0.5s ease-out;
+  }
+  @keyframes card-in {
+    from { opacity: 0; transform: translateY(30px) scale(0.95); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  h1 {
+    font-family: 'Fredoka One', cursive;
+    font-size: 2.4em;
+    margin-bottom: 8px;
+    text-shadow: 2px 3px 0 rgba(0,0,0,0.15);
+  }
+  h2 {
+    font-family: 'Fredoka One', cursive;
+    font-size: 1.8em;
+    margin-bottom: 16px;
+    text-shadow: 1px 2px 0 rgba(0,0,0,0.1);
+  }
+  .subtitle {
+    font-size: 1.1em;
+    opacity: 0.85;
+    margin-bottom: 24px;
+  }
+  .emoji-big { font-size: 3em; margin-bottom: 12px; }
+
+  /* ===== INPUTS ===== */
+  .input-group {
+    margin: 16px 0;
+    text-align: left;
+  }
+  .input-group label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 6px;
+    font-size: 1em;
+  }
+  .input-group input, .input-group select {
+    width: 100%;
+    padding: 14px 18px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-radius: 14px;
+    background: rgba(255,255,255,0.15);
+    color: var(--white);
+    font-family: 'Quicksand', sans-serif;
+    font-size: 1.1em;
+    font-weight: 600;
+    outline: none;
+    transition: border-color 0.3s;
+  }
+  .input-group input::placeholder { color: rgba(255,255,255,0.5); }
+  .input-group input:focus, .input-group select:focus {
+    border-color: var(--sand);
+  }
+  .input-group select option { background: var(--sea-dark); color: white; }
+
+  /* ===== BUTTONS ===== */
+  .btn {
+    display: inline-block;
+    padding: 16px 40px;
+    border: none;
+    border-radius: 16px;
+    font-family: 'Fredoka One', cursive;
+    font-size: 1.2em;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+    color: var(--white);
+    margin: 8px;
+  }
+  .btn:hover { transform: translateY(-3px); box-shadow: 0 6px 20px rgba(0,0,0,0.2); }
+  .btn:active { transform: translateY(0); }
+  .btn-primary { background: linear-gradient(135deg, var(--coral), var(--coral-light)); }
+  .btn-success { background: linear-gradient(135deg, var(--seaweed), #78e08f); }
+  .btn-gold { background: linear-gradient(135deg, var(--sand-dark), var(--star-gold)); color: var(--sea-dark); }
+  .btn-small { padding: 10px 24px; font-size: 0.95em; }
+
+  /* ===== PROGRESS ===== */
+  .progress-bar-container {
+    width: 100%;
+    height: 20px;
+    background: rgba(0,0,0,0.2);
+    border-radius: 10px;
+    margin: 20px 0;
+    overflow: hidden;
+  }
+  .progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--star-gold), var(--sand));
+    border-radius: 10px;
+    transition: width 0.5s ease;
+    position: relative;
+  }
+  .progress-bar-fill::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+    animation: shimmer 2s infinite;
+  }
+  @keyframes shimmer { 0%{transform:translateX(-100%)} 100%{transform:translateX(100%)} }
+  .progress-text {
+    font-weight: 700;
+    margin-bottom: 8px;
+    font-size: 1em;
+  }
+
+  /* ===== EXERCISE ===== */
+  .exercise-type {
+    display: inline-block;
+    background: rgba(255,255,255,0.15);
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 0.85em;
+    font-weight: 600;
+    margin-bottom: 16px;
+  }
+  .math-problem {
+    font-family: 'Fredoka One', cursive;
+    font-size: 3.5em;
+    margin: 20px 0;
+    text-shadow: 2px 3px 0 rgba(0,0,0,0.15);
+    letter-spacing: 4px;
+  }
+  .answer-input {
+    font-family: 'Fredoka One', cursive;
+    font-size: 2.2em;
+    text-align: center;
+    width: 160px;
+    padding: 12px;
+    border: 3px solid rgba(255,255,255,0.4);
+    border-radius: 16px;
+    background: rgba(255,255,255,0.15);
+    color: var(--white);
+    outline: none;
+    margin: 0 auto;
+    display: block;
+  }
+  .answer-input:focus { border-color: var(--star-gold); }
+  .answer-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin: 0 auto;
+  }
+  .btn-check {
+    padding: 12px 24px;
+    font-size: 1.6em;
+    border-radius: 16px;
+    line-height: 1;
+    min-width: 64px;
+  }
+  .answer-input.correct {
+    border-color: var(--seaweed);
+    background: rgba(106,176,76,0.3);
+    animation: pulse-correct 0.5s;
+  }
+  .answer-input.wrong {
+    border-color: var(--coral);
+    background: rgba(229,80,57,0.3);
+    animation: shake 0.5s;
+  }
+  @keyframes pulse-correct {
+    0%,100%{transform:scale(1)} 50%{transform:scale(1.05)}
+  }
+  @keyframes shake {
+    0%,100%{transform:translateX(0)} 20%{transform:translateX(-10px)} 40%{transform:translateX(10px)} 60%{transform:translateX(-10px)} 80%{transform:translateX(10px)}
+  }
+
+  .feedback {
+    margin-top: 16px;
+    font-size: 1.3em;
+    font-weight: 700;
+    min-height: 40px;
+  }
+  .feedback.correct-fb { color: #78e08f; }
+  .feedback.wrong-fb { color: var(--coral-light); }
+
+  .score-display {
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+    margin: 16px 0;
+    font-weight: 700;
+  }
+  .score-item {
+    background: rgba(255,255,255,0.1);
+    padding: 8px 20px;
+    border-radius: 12px;
+  }
+
+  /* ===== MINI-GAME SELECTION ===== */
+  .game-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin: 20px 0;
+  }
+  .game-option {
+    background: rgba(255,255,255,0.12);
+    border: 2px solid rgba(255,255,255,0.2);
+    border-radius: 20px;
+    padding: 24px 16px;
+    cursor: pointer;
+    transition: all 0.3s;
+    text-align: center;
+  }
+  .game-option:hover {
+    background: rgba(255,255,255,0.22);
+    transform: translateY(-4px);
+    border-color: var(--star-gold);
+  }
+  .game-option .game-icon { font-size: 2.5em; margin-bottom: 8px; }
+  .game-option .game-name { font-weight: 700; font-size: 1em; }
+
+  /* ===== MINI-GAME: VANG DE VIS ===== */
+  .game-canvas {
+    width: 100%;
+    height: 400px;
+    background: linear-gradient(180deg, #1e6f8f 0%, #0a3d62 100%);
+    border-radius: 16px;
+    position: relative;
+    overflow: hidden;
+    cursor: crosshair;
+    border: 2px solid rgba(255,255,255,0.2);
+    touch-action: manipulation;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+  .fish {
+    position: absolute;
+    font-size: 2.5em;
+    cursor: pointer;
+    transition: none;
+    user-select: none;
+    z-index: 10;
+    padding: 10px 14px;
+    line-height: 1;
+    border-radius: 50%;
+    pointer-events: auto;
+  }
+  .fish:hover {
+    background: rgba(255,255,255,0.15);
+    transform: scale(1.2);
+  }
+  .fish.caught {
+    animation: fish-caught 0.4s forwards;
+    pointer-events: none;
+  }
+  @keyframes fish-caught {
+    0%{transform:scale(1);opacity:1}
+    100%{transform:scale(2.5) rotate(20deg);opacity:0}
+  }
+  .game-score-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    font-weight: 700;
+  }
+  .game-timer {
+    font-family: 'Fredoka One', cursive;
+    font-size: 1.5em;
+    color: var(--star-gold);
+  }
+
+  /* ===== MINI-GAME: MEMORY ===== */
+  .memory-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin: 16px 0;
+  }
+  .memory-card {
+    aspect-ratio: 1;
+    border-radius: 14px;
+    background: linear-gradient(135deg, var(--sea-mid), var(--sea-dark));
+    border: 2px solid rgba(255,255,255,0.2);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2em;
+    transition: all 0.3s;
+    user-select: none;
+  }
+  .memory-card:hover { border-color: var(--star-gold); }
+  .memory-card.flipped {
+    background: rgba(255,255,255,0.2);
+    border-color: var(--star-gold);
+    transform: rotateY(180deg);
+  }
+  .memory-card.matched {
+    background: rgba(106,176,76,0.3);
+    border-color: var(--seaweed);
+    cursor: default;
+  }
+  .memory-card .card-back { font-size: 0.8em; }
+
+  /* ===== MINI-GAME: SCHATZOEKER ===== */
+  .treasure-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+    margin: 16px 0;
+  }
+  .treasure-cell {
+    aspect-ratio: 1;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #c4a35a, #e8d5a3);
+    border: 2px solid #b8943f;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8em;
+    transition: all 0.2s;
+    user-select: none;
+  }
+  .treasure-cell:hover { transform: scale(1.05); }
+  .treasure-cell.dug {
+    background: rgba(255,255,255,0.1);
+    border-color: rgba(255,255,255,0.2);
+    cursor: default;
+  }
+
+  /* ===== MINI-GAME: ZEEMEERMIN SPRONG ===== */
+  .jump-game {
+    width: 100%;
+    height: 400px;
+    background: linear-gradient(180deg, #87CEEB 0%, #1e6f8f 50%, #0a3d62 100%);
+    border-radius: 16px;
+    position: relative;
+    overflow: hidden;
+    border: 2px solid rgba(255,255,255,0.2);
+  }
+  .jump-player {
+    position: absolute;
+    font-size: 2.5em;
+    transition: left 0.15s, bottom 0.15s;
+    z-index: 5;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+  }
+  .jump-platform {
+    position: absolute;
+    height: 16px;
+    border-radius: 8px;
+    z-index: 2;
+  }
+  .jump-collectible {
+    position: absolute;
+    font-size: 1.5em;
+    z-index: 3;
+    animation: float-item 1.5s ease-in-out infinite alternate;
+  }
+  @keyframes float-item { 0%{transform:translateY(-5px)} 100%{transform:translateY(5px)} }
+
+  /* ===== RESULTS ===== */
+  .stars {
+    font-size: 3em;
+    margin: 16px 0;
+    letter-spacing: 8px;
+  }
+  .stat-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin: 20px 0;
+  }
+  .stat-item {
+    background: rgba(255,255,255,0.1);
+    border-radius: 14px;
+    padding: 16px;
+  }
+  .stat-value {
+    font-family: 'Fredoka One', cursive;
+    font-size: 1.8em;
+    color: var(--star-gold);
+  }
+  .stat-label { font-size: 0.85em; opacity: 0.8; }
+
+  .hidden { display: none !important; }
+
+  /* ===== SETTINGS TOGGLE ===== */
+  .settings-toggle {
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    z-index: 100;
+    background: rgba(255,255,255,0.15);
+    border: none;
+    border-radius: 50%;
+    width: 44px;
+    height: 44px;
+    font-size: 1.4em;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(8px);
+    transition: all 0.2s;
+  }
+  .settings-toggle:hover { background: rgba(255,255,255,0.25); transform: rotate(30deg); }
+
+  /* ===== CHECKBOX GROUP ===== */
+  .checkbox-group {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin: 8px 0;
+  }
+  .checkbox-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255,255,255,0.08);
+    padding: 10px 14px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background 0.2s;
+    font-size: 0.95em;
+  }
+  .checkbox-item:hover { background: rgba(255,255,255,0.15); }
+  .checkbox-item input { accent-color: var(--star-gold); width: 18px; height: 18px; cursor: pointer; }
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 500px) {
+    .card { padding: 24px 20px; }
+    h1 { font-size: 1.8em; }
+    .math-problem { font-size: 2.5em; }
+    .answer-input { font-size: 1.6em; width: 120px; }
+    .game-grid { grid-template-columns: 1fr; }
+    .memory-grid { grid-template-columns: repeat(3, 1fr); }
+    .treasure-grid { grid-template-columns: repeat(4, 1fr); }
+  }
+</style>
+</head>
+<body>
+
+<!-- Background effects -->
+<div class="bubbles" id="bubbles"></div>
+<div class="waves"><div class="wave wave1"></div><div class="wave wave2"></div></div>
+
+<!-- Settings gear -->
+<button class="settings-toggle" onclick="showScreen('welcome')" title="Instellingen">⚙️</button>
+
+<div class="container">
+
+  <!-- ========== WELCOME SCREEN ========== -->
+  <div id="screen-welcome" class="card">
+    <div class="emoji-big">🐚</div>
+    <h1>Rekenheld van de Noordzee</h1>
+    <p class="subtitle">Oefen je rekensommen en verdien een leuk spelletje!</p>
+
+    <div class="input-group">
+      <label>Hoe heet je? 🦀</label>
+      <input type="text" id="input-name" placeholder="Typ je naam..." value="" autocomplete="off">
+    </div>
+
+    <div class="input-group">
+      <label>Hoeveel oefeningen voor een spelletje? 🐟</label>
+      <select id="input-exercises">
+        <option value="3">3 oefeningen</option>
+        <option value="5" selected>5 oefeningen</option>
+        <option value="8">8 oefeningen</option>
+        <option value="10">10 oefeningen</option>
+        <option value="15">15 oefeningen</option>
+      </select>
+    </div>
+
+    <div class="input-group">
+      <label>Welke oefeningen? 📝</label>
+      <div class="checkbox-group">
+        <label class="checkbox-item"><input type="checkbox" id="chk-add" checked> Optellen</label>
+        <label class="checkbox-item"><input type="checkbox" id="chk-sub" checked> Aftrekken</label>
+        <label class="checkbox-item"><input type="checkbox" id="chk-mul" checked> Vermenigvuldigen</label>
+        <label class="checkbox-item"><input type="checkbox" id="chk-div" checked> Delen</label>
+      </div>
+    </div>
+
+    <button class="btn btn-primary" onclick="startExercises()" style="margin-top:16px">
+      🌊 Start de oefeningen!
+    </button>
+  </div>
+
+  <!-- ========== EXERCISE SCREEN ========== -->
+  <div id="screen-exercise" class="card hidden">
+    <div class="progress-text" id="progress-text">Oefening 1 van 5</div>
+    <div class="progress-bar-container">
+      <div class="progress-bar-fill" id="progress-fill" style="width:0%"></div>
+    </div>
+    <div class="score-display">
+      <div class="score-item">✅ <span id="score-correct">0</span></div>
+      <div class="score-item">❌ <span id="score-wrong">0</span></div>
+    </div>
+    <div class="exercise-type" id="exercise-type">Optellen</div>
+    <div class="math-problem" id="math-problem">12 + 7 = ?</div>
+    <div class="answer-row">
+      <input type="number" class="answer-input" id="answer-input" placeholder="?" autocomplete="off" inputmode="numeric">
+      <button class="btn btn-primary btn-check" id="btn-check" onclick="checkAnswer()">✔️</button>
+    </div>
+    <div class="feedback" id="feedback"></div>
+    <button class="btn btn-success btn-small hidden" id="btn-next" onclick="nextExercise()">Volgende ➡️</button>
+  </div>
+
+  <!-- ========== GAME SELECTION SCREEN ========== -->
+  <div id="screen-game-select" class="card hidden">
+    <div class="emoji-big">🎉</div>
+    <h2 id="congrats-text">Super gedaan!</h2>
+    <p class="subtitle">Kies een spelletje als beloning!</p>
+    <div class="game-grid">
+      <div class="game-option" onclick="startGame('fish')">
+        <div class="game-icon">🐟</div>
+        <div class="game-name">Vang de Vis</div>
+      </div>
+      <div class="game-option" onclick="startGame('memory')">
+        <div class="game-icon">🧠</div>
+        <div class="game-name">Memory</div>
+      </div>
+      <div class="game-option" onclick="startGame('treasure')">
+        <div class="game-icon">🏴‍☠️</div>
+        <div class="game-name">Schatzoeker</div>
+      </div>
+      <div class="game-option" onclick="startGame('jump')">
+        <div class="game-icon">🧜‍♀️</div>
+        <div class="game-name">Zeemeermin Sprong</div>
+      </div>
+    </div>
+    <button class="btn btn-gold btn-small" onclick="startExercises()" style="margin-top:8px">📝 Meer oefeningen</button>
+  </div>
+
+  <!-- ========== FISH GAME ========== -->
+  <div id="screen-game-fish" class="card hidden">
+    <h2>🐟 Vang de Vis!</h2>
+    <div class="game-score-bar">
+      <span>Gevangen: <span id="fish-score">0</span></span>
+      <span class="game-timer" id="fish-timer">30</span>
+    </div>
+    <div class="game-canvas" id="fish-canvas"></div>
+    <p style="margin-top:12px;opacity:0.7;font-size:0.9em">Klik of tik op de vissen!</p>
+  </div>
+
+  <!-- ========== MEMORY GAME ========== -->
+  <div id="screen-game-memory" class="card hidden">
+    <h2>🧠 Memory</h2>
+    <div class="game-score-bar">
+      <span>Paren: <span id="memory-score">0</span>/<span id="memory-total">0</span></span>
+      <span>Beurten: <span id="memory-turns">0</span></span>
+    </div>
+    <div class="memory-grid" id="memory-grid"></div>
+  </div>
+
+  <!-- ========== TREASURE GAME ========== -->
+  <div id="screen-game-treasure" class="card hidden">
+    <h2>🏴‍☠️ Schatzoeker</h2>
+    <p class="subtitle">Graaf in het zand! Vind alle schatten voor je pogingen op zijn.</p>
+    <div class="game-score-bar">
+      <span>Schatten: <span id="treasure-found">0</span>/<span id="treasure-total">0</span></span>
+      <span>Pogingen: <span id="treasure-tries">0</span></span>
+    </div>
+    <div class="treasure-grid" id="treasure-grid"></div>
+  </div>
+
+  <!-- ========== JUMP GAME ========== -->
+  <div id="screen-game-jump" class="card hidden">
+    <h2>🧜‍♀️ Zeemeermin Sprong</h2>
+    <div class="game-score-bar">
+      <span>Schelpen: <span id="jump-score">0</span></span>
+      <span class="game-timer" id="jump-timer">30</span>
+    </div>
+    <div class="jump-game" id="jump-arena" tabindex="0"></div>
+    <p style="margin-top:12px;opacity:0.7;font-size:0.9em">⬅️ ➡️ pijltjes om te bewegen, SPATIE om te springen!</p>
+  </div>
+
+  <!-- ========== GAME OVER / RESULTS ========== -->
+  <div id="screen-results" class="card hidden">
+    <div class="emoji-big" id="result-emoji">🌟</div>
+    <h2 id="result-title">Geweldig!</h2>
+    <div class="stars" id="result-stars">⭐⭐⭐</div>
+    <div class="stat-grid" id="result-stats"></div>
+    <div style="margin-top:16px">
+      <button class="btn btn-success" onclick="startExercises()">📝 Meer oefenen</button>
+      <button class="btn btn-gold" onclick="showScreen('game-select')">🎮 Nog een spelletje</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ===== STATE =====
+const state = {
+  name: '',
+  exercisesNeeded: 5,
+  enabledTypes: ['add','sub','mul','div'],
+  currentExercise: 0,
+  correctCount: 0,
+  wrongCount: 0,
+  currentProblem: null,
+  answered: false,
+  totalSessionCorrect: 0,
+  totalSessionWrong: 0
+};
+
+// ===== INIT =====
+function init() {
+  createBubbles();
+  document.getElementById('answer-input').addEventListener('keydown', e => {
+    if (e.key === 'Enter') checkAnswer();
+  });
+}
+
+function createBubbles() {
+  const container = document.getElementById('bubbles');
+  for (let i = 0; i < 15; i++) {
+    const b = document.createElement('div');
+    b.className = 'bubble';
+    const size = 10 + Math.random() * 40;
+    b.style.width = size + 'px';
+    b.style.height = size + 'px';
+    b.style.left = Math.random() * 100 + '%';
+    b.style.animationDuration = (6 + Math.random() * 10) + 's';
+    b.style.animationDelay = Math.random() * 8 + 's';
+    container.appendChild(b);
+  }
+}
+
+// ===== SCREENS =====
+function showScreen(name) {
+  document.querySelectorAll('.container > .card').forEach(el => el.classList.add('hidden'));
+  const el = document.getElementById('screen-' + name);
+  if (el) {
+    el.classList.remove('hidden');
+    el.style.animation = 'none';
+    el.offsetHeight; // reflow
+    el.style.animation = 'card-in 0.5s ease-out';
+  }
+}
+
+// ===== EXERCISES =====
+function startExercises() {
+  state.name = document.getElementById('input-name').value.trim() || 'Rekenheld';
+  state.exercisesNeeded = parseInt(document.getElementById('input-exercises').value);
+
+  state.enabledTypes = [];
+  if (document.getElementById('chk-add').checked) state.enabledTypes.push('add');
+  if (document.getElementById('chk-sub').checked) state.enabledTypes.push('sub');
+  if (document.getElementById('chk-mul').checked) state.enabledTypes.push('mul');
+  if (document.getElementById('chk-div').checked) state.enabledTypes.push('div');
+  if (state.enabledTypes.length === 0) state.enabledTypes = ['add'];
+
+  state.currentExercise = 0;
+  state.correctCount = 0;
+  state.wrongCount = 0;
+
+  showScreen('exercise');
+  generateProblem();
+}
+
+function generateProblem() {
+  const type = state.enabledTypes[Math.floor(Math.random() * state.enabledTypes.length)];
+  let a, b, answer, symbol, typeName;
+
+  switch(type) {
+    case 'add':
+      a = randInt(1, 90);
+      b = randInt(1, 99 - a);
+      answer = a + b;
+      symbol = '+';
+      typeName = 'Optellen';
+      break;
+    case 'sub':
+      a = randInt(10, 99);
+      b = randInt(1, a);
+      answer = a - b;
+      symbol = '−';
+      typeName = 'Aftrekken';
+      break;
+    case 'mul':
+      const tables = [2, 3, 4, 5, 10];
+      b = tables[Math.floor(Math.random() * tables.length)];
+      a = randInt(1, 10);
+      answer = a * b;
+      symbol = '×';
+      typeName = 'Vermenigvuldigen';
+      break;
+    case 'div':
+      const divBy = [2, 5, 10];
+      b = divBy[Math.floor(Math.random() * divBy.length)];
+      answer = randInt(1, Math.floor(100 / b));
+      a = answer * b;
+      symbol = '÷';
+      typeName = 'Delen';
+      break;
+  }
+
+  state.currentProblem = { a, b, answer, symbol, type };
+  state.answered = false;
+
+  document.getElementById('exercise-type').textContent = typeName;
+  document.getElementById('math-problem').textContent = `${a} ${symbol} ${b} = ?`;
+  document.getElementById('progress-text').textContent = `Oefening ${state.currentExercise + 1} van ${state.exercisesNeeded}`;
+  document.getElementById('progress-fill').style.width = ((state.currentExercise) / state.exercisesNeeded * 100) + '%';
+  document.getElementById('score-correct').textContent = state.correctCount;
+  document.getElementById('score-wrong').textContent = state.wrongCount;
+
+  const input = document.getElementById('answer-input');
+  input.value = '';
+  input.className = 'answer-input';
+  input.focus();
+
+  document.getElementById('feedback').textContent = '';
+  document.getElementById('feedback').className = 'feedback';
+  document.getElementById('btn-next').classList.add('hidden');
+  document.getElementById('btn-check').classList.remove('hidden');
+}
+
+function checkAnswer() {
+  if (state.answered) return;
+  const input = document.getElementById('answer-input');
+  const userAnswer = parseInt(input.value);
+  if (isNaN(userAnswer)) return;
+
+  state.answered = true;
+  const correct = userAnswer === state.currentProblem.answer;
+  const fb = document.getElementById('feedback');
+
+  if (correct) {
+    state.correctCount++;
+    state.totalSessionCorrect++;
+    input.className = 'answer-input correct';
+    fb.className = 'feedback correct-fb';
+    const msgs = [
+      `Super, ${state.name}! 🌟`,
+      'Helemaal juist! 🐬',
+      'Fantastisch! 🦀',
+      'Goed zo! ⭐',
+      'Knap gedaan! 🐚',
+      `Wauw, ${state.name}! 🎉`
+    ];
+    fb.textContent = msgs[Math.floor(Math.random() * msgs.length)];
+  } else {
+    state.wrongCount++;
+    state.totalSessionWrong++;
+    input.className = 'answer-input wrong';
+    fb.className = 'feedback wrong-fb';
+    fb.textContent = `Oeps! Het juiste antwoord is ${state.currentProblem.answer}`;
+  }
+
+  document.getElementById('score-correct').textContent = state.correctCount;
+  document.getElementById('score-wrong').textContent = state.wrongCount;
+  document.getElementById('btn-check').classList.add('hidden');
+  document.getElementById('btn-next').classList.remove('hidden');
+}
+
+function nextExercise() {
+  state.currentExercise++;
+  if (state.currentExercise >= state.exercisesNeeded) {
+    document.getElementById('congrats-text').textContent = `${state.correctCount}/${state.exercisesNeeded} juist, ${state.name}! 🎉`;
+    showScreen('game-select');
+  } else {
+    generateProblem();
+  }
+}
+
+// ===== GAME: VANG DE VIS =====
+let fishTimer, fishInterval;
+function startFishGame() {
+  showScreen('game-fish');
+  let score = 0;
+  let timeLeft = 30;
+  const canvas = document.getElementById('fish-canvas');
+  canvas.innerHTML = '';
+  document.getElementById('fish-score').textContent = '0';
+  document.getElementById('fish-timer').textContent = '30';
+
+  const fishEmojis = ['🐟', '🐠', '🐡', '🦈', '🐙', '🦑', '🦐', '🦞', '🐳'];
+
+  function spawnFish() {
+    const fish = document.createElement('div');
+    fish.className = 'fish';
+    const emoji = fishEmojis[Math.floor(Math.random() * fishEmojis.length)];
+    const isRare = emoji === '🦈' || emoji === '🐳';
+    fish.textContent = emoji;
+    fish.dataset.points = isRare ? 3 : 1;
+    const top = 20 + Math.random() * 300;
+    fish.style.top = top + 'px';
+    const canvasW = canvas.offsetWidth;
+    const fromLeft = Math.random() > 0.5;
+    fish.style.left = fromLeft ? '-80px' : (canvasW + 20) + 'px';
+    const speed = 0.8 + Math.random() * 1.5; // slower for easier clicking
+    if (!fromLeft) fish.style.direction = 'rtl'; // flip emoji direction
+
+    // Use pointerdown for better touch + mouse support
+    fish.addEventListener('pointerdown', (e) => {
+      e.stopPropagation();
+      e.preventDefault();
+      if (fish.classList.contains('caught')) return;
+      fish.classList.add('caught');
+      score += parseInt(fish.dataset.points);
+      document.getElementById('fish-score').textContent = score;
+      setTimeout(() => { if (fish.parentNode) fish.remove(); }, 400);
+    });
+
+    canvas.appendChild(fish);
+
+    let pos = fromLeft ? -80 : canvasW + 20;
+    const dir = fromLeft ? 1 : -1;
+    let animId;
+    let bobOffset = 0;
+    function moveFish() {
+      if (!fish.parentNode || fish.classList.contains('caught')) return;
+      if (document.getElementById('screen-game-fish').classList.contains('hidden')) return;
+      pos += speed * dir;
+      bobOffset += 0.05;
+      const bob = Math.sin(bobOffset * 3) * 5;
+      fish.style.left = pos + 'px';
+      fish.style.top = (top + bob) + 'px';
+      if ((dir === 1 && pos > canvasW + 80) || (dir === -1 && pos < -80)) {
+        fish.remove();
+        return;
+      }
+      animId = requestAnimationFrame(moveFish);
+    }
+    animId = requestAnimationFrame(moveFish);
+  }
+
+  fishInterval = setInterval(spawnFish, 1000);
+  spawnFish();
+
+  fishTimer = setInterval(() => {
+    timeLeft--;
+    document.getElementById('fish-timer').textContent = timeLeft;
+    if (timeLeft <= 0) {
+      clearInterval(fishTimer);
+      clearInterval(fishInterval);
+      endGame('Vissen gevangen', score, '🐟');
+    }
+  }, 1000);
+}
+
+// ===== GAME: MEMORY =====
+let memoryState = {};
+function startMemoryGame() {
+  showScreen('game-memory');
+  const emojis = ['🐟','🐠','🐙','🦀','🐚','🌊','⭐','🐬'];
+  const pairs = emojis.slice(0, 6);
+  const cards = [...pairs, ...pairs];
+  shuffle(cards);
+
+  memoryState = { cards, flipped: [], matched: new Set(), turns: 0, pairs: pairs.length, locked: false };
+
+  document.getElementById('memory-score').textContent = '0';
+  document.getElementById('memory-total').textContent = pairs.length;
+  document.getElementById('memory-turns').textContent = '0';
+
+  const grid = document.getElementById('memory-grid');
+  grid.innerHTML = '';
+  cards.forEach((emoji, i) => {
+    const card = document.createElement('div');
+    card.className = 'memory-card';
+    card.dataset.index = i;
+    card.innerHTML = '<span class="card-back">🌊</span>';
+    card.addEventListener('click', () => flipCard(i, card));
+    grid.appendChild(card);
+  });
+}
+
+function flipCard(index, card) {
+  if (memoryState.locked) return;
+  if (memoryState.matched.has(index)) return;
+  if (memoryState.flipped.length >= 2) return;
+  if (memoryState.flipped.find(f => f.index === index)) return;
+
+  card.classList.add('flipped');
+  card.innerHTML = memoryState.cards[index];
+  memoryState.flipped.push({ index, card });
+
+  if (memoryState.flipped.length === 2) {
+    memoryState.turns++;
+    document.getElementById('memory-turns').textContent = memoryState.turns;
+
+    const [a, b] = memoryState.flipped;
+    if (memoryState.cards[a.index] === memoryState.cards[b.index]) {
+      a.card.classList.add('matched');
+      b.card.classList.add('matched');
+      memoryState.matched.add(a.index);
+      memoryState.matched.add(b.index);
+      memoryState.flipped = [];
+      document.getElementById('memory-score').textContent = memoryState.matched.size / 2;
+
+      if (memoryState.matched.size === memoryState.cards.length) {
+        setTimeout(() => endGame('Memory in beurten', memoryState.turns, '🧠', true), 600);
+      }
+    } else {
+      memoryState.locked = true;
+      setTimeout(() => {
+        a.card.classList.remove('flipped');
+        a.card.innerHTML = '<span class="card-back">🌊</span>';
+        b.card.classList.remove('flipped');
+        b.card.innerHTML = '<span class="card-back">🌊</span>';
+        memoryState.flipped = [];
+        memoryState.locked = false;
+      }, 800);
+    }
+  }
+}
+
+// ===== GAME: SCHATZOEKER =====
+function startTreasureGame() {
+  showScreen('game-treasure');
+  const gridSize = 20; // 5x4
+  const treasureCount = 5;
+  const treasureItems = ['💎','👑','🪙','⚓','🔱'];
+  const cells = Array(gridSize).fill(null);
+  const treasurePositions = [];
+
+  while (treasurePositions.length < treasureCount) {
+    const pos = Math.floor(Math.random() * gridSize);
+    if (!treasurePositions.includes(pos)) treasurePositions.push(pos);
+  }
+  treasurePositions.forEach((pos, i) => { cells[pos] = treasureItems[i]; });
+
+  let found = 0, tries = 0;
+  document.getElementById('treasure-found').textContent = '0';
+  document.getElementById('treasure-total').textContent = treasureCount;
+  document.getElementById('treasure-tries').textContent = '0';
+
+  const grid = document.getElementById('treasure-grid');
+  grid.innerHTML = '';
+  cells.forEach((treasure, i) => {
+    const cell = document.createElement('div');
+    cell.className = 'treasure-cell';
+    cell.textContent = '🏖️';
+    cell.addEventListener('click', () => {
+      if (cell.classList.contains('dug')) return;
+      cell.classList.add('dug');
+      tries++;
+      document.getElementById('treasure-tries').textContent = tries;
+      if (treasure) {
+        cell.textContent = treasure;
+        found++;
+        document.getElementById('treasure-found').textContent = found;
+        if (found === treasureCount) {
+          setTimeout(() => endGame('Schatten gevonden in pogingen', tries, '🏴‍☠️', true), 500);
+        }
+      } else {
+        cell.textContent = '💨';
+      }
+    });
+    grid.appendChild(cell);
+  });
+}
+
+// ===== GAME: ZEEMEERMIN SPRONG =====
+let jumpState = {}, jumpTimer, jumpLoop;
+function startJumpGame() {
+  showScreen('game-jump');
+  const arena = document.getElementById('jump-arena');
+  arena.innerHTML = '';
+  arena.focus();
+
+  const w = arena.offsetWidth || 400;
+  const h = arena.offsetHeight || 400;
+
+  jumpState = {
+    x: w / 2, y: 50, vy: 0, vx: 0,
+    onGround: false, score: 0, timeLeft: 30,
+    keys: {}, platforms: [], collectibles: [], w, h, active: true
+  };
+
+  // create platforms
+  const platformData = [
+    { x: 0, y: 30, width: w, color: '#c4a35a' }, // ground (sand)
+  ];
+  for (let i = 0; i < 6; i++) {
+    platformData.push({
+      x: Math.random() * (w - 100),
+      y: 60 + i * 55,
+      width: 60 + Math.random() * 60,
+      color: `hsl(${160 + Math.random()*40}, 50%, ${35+Math.random()*15}%)`
+    });
+  }
+
+  platformData.forEach(p => {
+    const el = document.createElement('div');
+    el.className = 'jump-platform';
+    el.style.left = p.x + 'px';
+    el.style.bottom = p.y + 'px';
+    el.style.width = p.width + 'px';
+    el.style.background = p.color;
+    arena.appendChild(el);
+    jumpState.platforms.push({ el, x: p.x, y: p.y, w: p.width });
+  });
+
+  // collectibles
+  const shellEmojis = ['🐚','⭐','🦪','💎'];
+  for (let i = 0; i < 8; i++) {
+    const el = document.createElement('div');
+    el.className = 'jump-collectible';
+    el.textContent = shellEmojis[Math.floor(Math.random() * shellEmojis.length)];
+    const cx = 20 + Math.random() * (w - 40);
+    const cy = 60 + Math.random() * 280;
+    el.style.left = cx + 'px';
+    el.style.bottom = cy + 'px';
+    arena.appendChild(el);
+    jumpState.collectibles.push({ el, x: cx, y: cy, collected: false });
+  }
+
+  // player
+  const player = document.createElement('div');
+  player.className = 'jump-player';
+  player.textContent = '🧜‍♀️';
+  player.style.left = jumpState.x + 'px';
+  player.style.bottom = jumpState.y + 'px';
+  arena.appendChild(player);
+  jumpState.player = player;
+
+  document.getElementById('jump-score').textContent = '0';
+  document.getElementById('jump-timer').textContent = '30';
+
+  // controls
+  const keyDown = e => { jumpState.keys[e.key] = true; e.preventDefault(); };
+  const keyUp = e => { jumpState.keys[e.key] = false; };
+  arena.addEventListener('keydown', keyDown);
+  arena.addEventListener('keyup', keyUp);
+  jumpState.cleanUp = () => {
+    arena.removeEventListener('keydown', keyDown);
+    arena.removeEventListener('keyup', keyUp);
+  };
+
+  // touch controls
+  let touchStartX = null;
+  arena.addEventListener('touchstart', e => {
+    const touch = e.touches[0];
+    const rect = arena.getBoundingClientRect();
+    touchStartX = touch.clientX;
+    jumpState.keys[' '] = true;
+    setTimeout(() => jumpState.keys[' '] = false, 100);
+  });
+  arena.addEventListener('touchmove', e => {
+    if (touchStartX !== null) {
+      const dx = e.touches[0].clientX - touchStartX;
+      jumpState.keys['ArrowLeft'] = dx < -10;
+      jumpState.keys['ArrowRight'] = dx > 10;
+    }
+  });
+  arena.addEventListener('touchend', () => {
+    touchStartX = null;
+    jumpState.keys['ArrowLeft'] = false;
+    jumpState.keys['ArrowRight'] = false;
+  });
+
+  jumpTimer = setInterval(() => {
+    jumpState.timeLeft--;
+    document.getElementById('jump-timer').textContent = jumpState.timeLeft;
+    if (jumpState.timeLeft <= 0) {
+      jumpState.active = false;
+      clearInterval(jumpTimer);
+      jumpState.cleanUp();
+      endGame('Schelpen verzameld', jumpState.score, '🧜‍♀️');
+    }
+  }, 1000);
+
+  function gameLoop() {
+    if (!jumpState.active) return;
+
+    // input
+    if (jumpState.keys['ArrowLeft'] || jumpState.keys['a']) jumpState.vx = -4;
+    else if (jumpState.keys['ArrowRight'] || jumpState.keys['d']) jumpState.vx = 4;
+    else jumpState.vx *= 0.8;
+
+    if ((jumpState.keys[' '] || jumpState.keys['ArrowUp'] || jumpState.keys['w']) && jumpState.onGround) {
+      jumpState.vy = 12;
+      jumpState.onGround = false;
+    }
+
+    // physics
+    jumpState.vy -= 0.5; // gravity
+    jumpState.x += jumpState.vx;
+    jumpState.y += jumpState.vy;
+
+    // boundaries
+    if (jumpState.x < 0) jumpState.x = 0;
+    if (jumpState.x > jumpState.w - 30) jumpState.x = jumpState.w - 30;
+
+    // platform collision
+    jumpState.onGround = false;
+    jumpState.platforms.forEach(p => {
+      if (jumpState.vy <= 0 &&
+          jumpState.x + 30 > p.x && jumpState.x < p.x + p.w &&
+          jumpState.y <= p.y + 16 && jumpState.y >= p.y - 5) {
+        jumpState.y = p.y + 16;
+        jumpState.vy = 0;
+        jumpState.onGround = true;
+      }
+    });
+
+    if (jumpState.y < 30) { jumpState.y = 30; jumpState.vy = 0; jumpState.onGround = true; }
+
+    // collectibles
+    jumpState.collectibles.forEach(c => {
+      if (c.collected) return;
+      const dx = jumpState.x - c.x;
+      const dy = jumpState.y - c.y;
+      if (Math.abs(dx) < 35 && Math.abs(dy) < 35) {
+        c.collected = true;
+        c.el.style.display = 'none';
+        jumpState.score++;
+        document.getElementById('jump-score').textContent = jumpState.score;
+      }
+    });
+
+    // render
+    jumpState.player.style.left = jumpState.x + 'px';
+    jumpState.player.style.bottom = jumpState.y + 'px';
+
+    requestAnimationFrame(gameLoop);
+  }
+  requestAnimationFrame(gameLoop);
+}
+
+// ===== GAME ROUTER =====
+function startGame(type) {
+  // clean up any previous game timers
+  clearInterval(fishTimer);
+  clearInterval(fishInterval);
+  clearInterval(jumpTimer);
+  if (jumpState.cleanUp) jumpState.cleanUp();
+  if (jumpState.active !== undefined) jumpState.active = false;
+
+  switch(type) {
+    case 'fish': startFishGame(); break;
+    case 'memory': startMemoryGame(); break;
+    case 'treasure': startTreasureGame(); break;
+    case 'jump': startJumpGame(); break;
+  }
+}
+
+// ===== END GAME =====
+function endGame(label, score, emoji, lowerIsBetter = false) {
+  clearInterval(fishTimer);
+  clearInterval(fishInterval);
+  clearInterval(jumpTimer);
+  if (jumpState.cleanUp) jumpState.cleanUp();
+  jumpState.active = false;
+
+  showScreen('results');
+  document.getElementById('result-emoji').textContent = emoji;
+  document.getElementById('result-title').textContent = `Goed gespeeld, ${state.name}!`;
+
+  // Stars based on performance
+  let stars;
+  if (lowerIsBetter) {
+    stars = score <= 10 ? 3 : score <= 15 ? 2 : 1;
+  } else {
+    stars = score >= 15 ? 3 : score >= 8 ? 2 : 1;
+  }
+  document.getElementById('result-stars').textContent = '⭐'.repeat(stars) + '☆'.repeat(3 - stars);
+
+  const statsEl = document.getElementById('result-stats');
+  statsEl.innerHTML = `
+    <div class="stat-item">
+      <div class="stat-value">${score}</div>
+      <div class="stat-label">${label}</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-value">${state.totalSessionCorrect}</div>
+      <div class="stat-label">Sommen juist (totaal)</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-value">${state.correctCount}/${state.exercisesNeeded}</div>
+      <div class="stat-label">Laatste ronde</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-value">${stars}/3</div>
+      <div class="stat-label">Sterren</div>
+    </div>
+  `;
+}
+
+// ===== HELPERS =====
+function randInt(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
+function shuffle(arr) { for (let i = arr.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [arr[i], arr[j]] = [arr[j], arr[i]]; } }
+
+// ===== START =====
+init();
+</script>
+</body>
+</html>
